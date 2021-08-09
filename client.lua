@@ -1,16 +1,15 @@
 -- modified from neovim test/functional/helpers.lua
--- VERSION 1
 local Session = require('nvim.session')
 local SocketStream = require('nvim.socket_stream')
-local vim = require('nvim-xplr.vim')
 
-local inspect = require'inspect'
-local function log(msg)
-  local outfile = '/home/f1/logs/xplr.log'
-  local fp = io.open(outfile, "a")
-  fp:write(string.format('\n%s', inspect(msg)))
-  fp:close()
-end
+-- debug
+--local inspect = require'inspect'
+-- local function log(msg)
+--   local outfile = ("%s/logs/xplr.log"):format(os.getenv("HOME"))
+--   local fp = io.open(outfile, "a")
+--   fp:write(string.format('\n%s', inspect(msg)))
+--   fp:close()
+-- end
 
 
 local Client = {}
@@ -18,12 +17,6 @@ Client.__index = Client
 
 function Client:new(socket_path)
 local stream = SocketStream.open(socket_path)
-
--- stream:read_start(function(chunk) 
--- print(chunk)
--- log(chunk)
--- end)
-
 return setmetatable({
   _session =  Session.new(stream),
   _stream = stream
@@ -72,30 +65,8 @@ end)()
 
 
 
-
-
-
-
---higher level
-
--- accepts {{}, {}} and sends data for every file selected
-function Client:open_selection(selection)
-client:exec_lua([[return require'xplr.actions'.open_selection(...)]], app.selection)
-end
-
-
--- lower level
 function Client:request(method, ...)
-  local status, rv = self._session.request(method, ...)
-  if not status then
-    if loop_running then
-      last_error = rv[2]
-      self._session:stop()
-    else
-      error(rv[2])
-    end
-  end
-  return rv
+  self._session.request(method, ...)
 end
 
 
@@ -107,7 +78,6 @@ end
 -- Executes an ex-command. VimL errors manifest as client (lua) errors, but
 -- v:errmsg will not be updated.
 function Client:command(cmd)
- -- log(self._session.request)
   self._session:request('nvim_command', cmd)
 end
 
