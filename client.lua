@@ -2,6 +2,7 @@
 -- VERSION 1
 local Session = require('nvim.session')
 local SocketStream = require('nvim.socket_stream')
+local vim = require('nvim-xplr.vim')
 
 local inspect = require'inspect'
 local function log(msg)
@@ -18,6 +19,11 @@ Client.__index = Client
 function Client:new(socket_path)
 local stream = SocketStream.open(socket_path)
 
+-- stream:read_start(function(chunk) 
+-- print(chunk)
+-- log(chunk)
+-- end)
+
 return setmetatable({
   _session =  Session.new(stream),
   _stream = stream
@@ -26,6 +32,59 @@ end
 
 
 
+-- convert userdata and function references to strings before sending lua tables over msgpack
+local function deepnil(orig) end
+deepnil = (function()
+  local function _id(v)
+    return v
+  end
+
+  local deepnil_funcs = {
+    table = function(orig)
+      local copy = {}
+
+     --  if vim._empty_dict_mt ~= nil and getmetatable(orig) == vim._empty_dict_mt then
+     --    copy = vim.empty_dict()
+     -- end
+
+      for k, v in pairs(orig) do
+        copy[deepnil(k)] = deepnil(v)
+      end
+      return copy
+    end,
+    number = _id,
+    string = _id,
+    ['nil'] = _id,
+    boolean = _id,
+    ['function'] = function() return "<function>" end,
+    ['userdata'] = function() return "<userdata>" end,
+  }
+
+  return function(orig)
+    local f = deepnil_funcs[type(orig)]
+    if f then
+      return f(orig)
+    else
+    --error("Cannot deepcopy object of type "..type(orig))
+    end
+  end
+end)()
+
+
+
+
+
+
+
+--higher level
+
+-- accepts {{}, {}} and sends data for every file selected
+function Client:open_selection(selection)
+client:exec_lua([[return require'xplr.actions'.open_selection(...)]], app.selection)
+end
+
+
+-- lower level
 function Client:request(method, ...)
   local status, rv = self._session.request(method, ...)
   if not status then
@@ -40,40 +99,15 @@ function Client:request(method, ...)
 end
 
 
-
-function Client:create_callindex(func)
-  local table = {}
-  setmetatable(table, {
-    __index = function(tbl, arg1)
-      local ret = function(...) return func(arg1, ...) end
-      tbl[arg1] = ret
-      return ret
-    end,
-  })
-  return table
-end
-
-
--- module.funcs = module.create_callindex(module.call)
-Client.meths = self.create_callindex(module.nvim)
--- module.async_meths = module.create_callindex(module.nvim_async)
--- module.uimeths = module.create_callindex(ui)
--- module.bufmeths = module.create_callindex(module.buffer)
--- module.winmeths = module.create_callindex(module.window)
--- module.tabmeths = module.create_callindex(module.tabpage)
--- module.curbufmeths = module.create_callindex(module.curbuf)
--- module.curwinmeths = module.create_callindex(module.curwin)
--- module.curtabmeths = module.create_callindex(module.curtab)
-
-function Client:exec_lua(code, ...)
-  return self.meths.exec_lua(code, {...})
+function Client:exec_lua(code, t)
+self._session:request('nvim_exec_lua', code, { deepnil(t) })
 end
 
 
 -- Executes an ex-command. VimL errors manifest as client (lua) errors, but
 -- v:errmsg will not be updated.
 function Client:command(cmd)
-  log(self._session.request)
+ -- log(self._session.request)
   self._session:request('nvim_command', cmd)
 end
 
