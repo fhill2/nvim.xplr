@@ -1,25 +1,30 @@
+# nvim.xplr
+ 
+- preview hovered file in preview window (using Telescope previewer)
 
-an xplr plugin that hosts a [msgpack client](https://github.com/neovim/lua-client) to communicate with nvim.
+- open selection in nvim
+
+- a simple API that wraps nvim lua msgpack client customized for xplr. This is so you can call nvim API functions or your own lua functions from xplr.  
 
 
+xplr plugin that hosts a [msgpack client](https://github.com/neovim/lua-client) to communicate with nvim.
 
-nvim-xplr.xplr provides these features:
-1 preview hovered file in preview window (using Telescope previewer)
+This is a plugin for Xplr (see [xplr.nvim](https://github.com/fhill2/xplr.nvim) for the nvim plugin)
 
-2 open selection in nvim
 
-3 a simple API that wraps nvim lua msgpack client customized for xplr. This is so you can call nvim API functions or your own lua functions from xplr.  
+## Installation
+#### Install xplr.nvim
+install [xplr.nvim](https://github.com/fhill2/xplr.nvim) and `call health#xplr#check()`
 
-Installation
-1 Install xplr.nvim
-install [xplr.nvim](https://github.com/fhill2/xplr.nvim) and `call health#xplr#check()`. This will show info about what needs to be installed. Or read below!
+This will show info about what needs to be installed. Or read below!
 
-## Install Luarocks and required packages
+#### Install Luarocks and required packages
 ```bash
 luarocks install nvim-client
 ```
+see below for installing luarocks!
 
-3 install this plugin manually
+#### install this plugin manually
 
 - Add the following line in `~/.config/xplr/init.lua`
 
@@ -29,7 +34,7 @@ luarocks install nvim-client
 
 - Clone the plugin
 
-  ```bash
+  ```bash  
   mkdir -p ~/.config/xplr/plugins
 
   git clone https://github.com/fhill2/nvim.xplr ~/.config/xplr/plugins/nvim-xplr
@@ -37,7 +42,7 @@ luarocks install nvim-client
 
 - Require the module in `~/.config/xplr/init.lua`
 
-  ```lua
+```lua
 local nvim = require("nvim-xplr").setup{
   open_selection = {
     enabled = true,
@@ -55,32 +60,39 @@ local nvim = require("nvim-xplr").setup{
   -- Type `:o` to open selected files in nvim.
   -- Type `:i` to toggle nvim preview mode.
   ```
+___
+### Installing Luarocks with Hererocks (recommended)
+I recommend installing Luarocks using Hererocks.
 
+you can install Hererocks through:
+- luarocks repo(https://github.com/luarocks/hererocks) or through 
+- OS package manager `yay -S hererocks`
+- Packer.nvim
 
-If you don't have luarocks installed and you use Packer.nvim as your plugin manager, you can install Luarocks with it (uses Hererocks to install)
-I recommend installing Luarocks with [Hererocks](https://github.com/luarocks/hererocks")
+and once installed, you can install Luarocks with it.
 
+### Plugin installation without Luarocks 
 If you are installing without Luarocks, you will have to make sure nvim-client and its dependencies are available within the xplr environment
 ```lua
 package.path = package.path .. ""
 ```
 If using Luarocks, luarocks require paths are appended to xplr require paths at `setup()`
 
-
-Default behaviour:
+___
+### Default Behaviour
 When you open xplr inside nvim, this plugin's lua msgpack client will use the server address of the nvim instance (`echo v:servername`) you launched it from (passed down with env variable).
+
 If you launch xplr outside nvim, this plugin won't do/setup anything.
 
+___
 
 
-
-Improvements
-Currently communication is unidirectional xplr --> nvim (I haven't set up handlers to receive data from nvim)
-
-
+### Examples for creating custom commands
 Creating your own Commands that interact with nvim:
-requiring `nvim-xplr` returns the msgpack client object to `~/.config/xplr/init.lua`.
-You can then use the msgpack client within your keybinded functions to trigger and send data to functions in nvim like this:
+
+requiring `nvim-xplr` in xplr `init.lua`returns the msgpack client object.
+
+You can then use the msgpack client within your xplr lua functions to trigger and send data to functions in nvim like this:
 
 ```lua
 
@@ -102,7 +114,6 @@ xplr.config.modes.builtin.action.key_bindings.on_key["u"] = {
 ``` 
 
 msgpack client accepts tables, client will nil all userdata/function refs
-prepend return is needed
 
 you can call whatever nvim API method you want, however i've found it easier to send data over to a nvim function and do the work on the nvim side.
 
@@ -117,3 +128,8 @@ you can call whatever nvim API method you want, however i've found it easier to 
 -- call any nvim API method like this (untested)
 nvim:request("nvim_command", "echo v:servername")
 ```
+
+
+### Improvements
+Currently communication is unidirectional xplr --> nvim (I haven't set up handlers to receive data from nvim)
+
