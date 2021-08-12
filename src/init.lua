@@ -1,11 +1,11 @@
 -- debug
-local inspect = require("inspect")
-local function log(msg)
-  local outfile = ("%s/logs/xplr.log"):format(os.getenv("HOME"))
-  local fp = io.open(outfile, "a")
-  fp:write(string.format("\n%s", inspect(msg)))
-  fp:close()
-end
+-- local inspect = require("inspect")
+-- local function log(msg)
+--   local outfile = ("%s/logs/xplr.log"):format(os.getenv("HOME"))
+--   local fp = io.open(outfile, "a")
+--   fp:write(string.format("\n%s", inspect(msg)))
+--   fp:close()
+-- end
 
 local function setup(opts)
   if os.getenv("NVIM_XPLR") then
@@ -31,8 +31,7 @@ local function setup(opts)
     package.cpath = package.cpath .. ";" .. luarocks_cpath
 
     local client
-    log(pcall(require, "nvim.session"))
-    if pcall(require, "nvim.session") then
+       if pcall(require, "nvim.session") then
       local Client = require("nvim-xplr.client")
       local socket_path = os.getenv("NVIM_XPLR_SERVERNAME")
       client = Client:new(socket_path)

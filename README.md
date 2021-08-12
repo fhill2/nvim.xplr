@@ -4,13 +4,11 @@ an xplr plugin that hosts a [msgpack client](https://github.com/neovim/lua-clien
 
 
 nvim-xplr.xplr provides these features:
-1 a simple API that wraps nvim-client API customized for xplr. This makes it possible to send data to nvim API functions or your own lua functions in nvim.  
+1 preview hovered file in preview window (using Telescope previewer)
 
-2 preview hovered file in preview window (using Telescope previewer)
+2 open selection in nvim
 
-
-3 open selection in nvim
-
+3 a simple API that wraps nvim lua msgpack client customized for xplr. This is so you can call nvim API functions or your own lua functions from xplr.  
 
 Installation
 1 Install xplr.nvim
