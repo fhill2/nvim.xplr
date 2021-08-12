@@ -65,16 +65,17 @@ ___
 I recommend installing Luarocks using Hererocks.
 
 you can install Hererocks through:
-- luarocks repo(https://github.com/luarocks/hererocks) or through 
+- luarocks repo(https://github.com/luarocks/hererocks) 
 - OS package manager `yay -S hererocks`
 - Packer.nvim
 
-and once installed, you can install Luarocks with it.
+once installed, you can install Luarocks with it.
 
 ### Plugin installation without Luarocks 
-If you are installing without Luarocks, you will have to make sure nvim-client and its dependencies are available within the xplr environment
+If you are installing without Luarocks, make sure nvim-client and its dependencies are available within the xplr environment. Checkhealth can't be used to validate the installation in this case.
+
 ```lua
-package.path = package.path .. ""
+package.path = package.path .. "/path/to/deps"
 ```
 If using Luarocks, luarocks require paths are appended to xplr require paths at `setup()`
 
@@ -82,7 +83,7 @@ ___
 ### Default Behaviour
 When you open xplr inside nvim, this plugin's lua msgpack client will use the server address of the nvim instance (`echo v:servername`) you launched it from (passed down with env variable).
 
-If you launch xplr outside nvim, this plugin won't do/setup anything.
+If you launch xplr outside nvim, this plugin won't do/setup anything (it will skip the entire contents of the `setup()` function completely)
 
 ___
 
@@ -92,7 +93,7 @@ Creating your own Commands that interact with nvim:
 
 requiring `nvim-xplr` in xplr `init.lua`returns the msgpack client object.
 
-You can then use the msgpack client within your xplr lua functions to trigger and send data to functions in nvim like this:
+You can then use the msgpack client within your xplr lua functions in `xplr/init.lua` to trigger and send data to functions in nvim like this:
 
 ```lua
 
