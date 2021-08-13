@@ -9,7 +9,6 @@
 
 local function setup(opts)
   if os.getenv("NVIM_XPLR") then
-    log("nvim-xplr setup")
     local enabled = false
     local messages = {}
 
