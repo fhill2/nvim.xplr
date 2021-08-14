@@ -7,35 +7,32 @@
 - a simple API that wraps nvim lua msgpack client customized for xplr. This is so you can call nvim API functions or your own lua functions from xplr.  
 
 
-xplr plugin that hosts a [msgpack client](https://github.com/neovim/lua-client) to communicate with nvim.
+xplr plugin that hosts a [msgpack client](https://github.com/neovim/lua-client) and communicates with nvim.
 
 This is a plugin for Xplr (see [xplr.nvim](https://github.com/fhill2/xplr.nvim) for the nvim plugin)
 
 
 ## Installation
-#### Install xplr.nvim
-install [xplr.nvim](https://github.com/fhill2/xplr.nvim)`
+
 
 #### install this plugin manually
 
 - Add the following line in `~/.config/xplr/init.lua`
 
-  ```lua
+```lua
   package.path = os.getenv("HOME") .. '/.config/xplr/plugins/?/src/init.lua'
-  ```
+```
 
 - Clone the plugin and build dependencies
 
-  ```bash  
+```bash  
   mkdir -p ~/.config/xplr/plugins
   git clone https://github.com/fhill2/nvim.xplr ~/.config/xplr/plugins/nvim-xplr
   cd ~/.config/xplr/plugins/nvim-xplr
   git submodule update --init --recursive
   cd src/luv && make
   cd ../libmpack && make 
- ```
-
-
+```
 
 - Require the module in `~/.config/xplr/init.lua`
 
@@ -56,9 +53,9 @@ local nvim = require("nvim-xplr").setup{
 
   -- Type `:o` to open selected files in nvim.
   -- Type `:i` to toggle nvim preview mode.
-  ```
-___
+```
 
+- install [xplr.nvim](https://github.com/fhill2/xplr.nvim)
 
 ___
 ### Default Behaviour
