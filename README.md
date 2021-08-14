@@ -14,15 +14,7 @@ This is a plugin for Xplr (see [xplr.nvim](https://github.com/fhill2/xplr.nvim) 
 
 ## Installation
 #### Install xplr.nvim
-install [xplr.nvim](https://github.com/fhill2/xplr.nvim) and `call health#xplr#check()`
-
-This will show info about what needs to be installed. Or read below!
-
-#### Install Luarocks and required packages
-```bash
-luarocks install nvim-client
-```
-see below for installing luarocks!
+install [xplr.nvim](https://github.com/fhill2/xplr.nvim)`
 
 #### install this plugin manually
 
@@ -32,13 +24,18 @@ see below for installing luarocks!
   package.path = os.getenv("HOME") .. '/.config/xplr/plugins/?/src/init.lua'
   ```
 
-- Clone the plugin
+- Clone the plugin and build dependencies
 
   ```bash  
   mkdir -p ~/.config/xplr/plugins
-
   git clone https://github.com/fhill2/nvim.xplr ~/.config/xplr/plugins/nvim-xplr
-  ```
+  cd ~/.config/xplr/plugins/nvim-xplr
+  git submodule update --init --recursive
+  cd src/luv && make
+  cd ../libmpack && make 
+ ```
+
+
 
 - Require the module in `~/.config/xplr/init.lua`
 
@@ -61,23 +58,7 @@ local nvim = require("nvim-xplr").setup{
   -- Type `:i` to toggle nvim preview mode.
   ```
 ___
-### Installing Luarocks with Hererocks (recommended)
-I recommend installing Luarocks using Hererocks.
 
-you can install Hererocks through:
-- luarocks repo(https://github.com/luarocks/hererocks) 
-- OS package manager `yay -S hererocks`
-- Packer.nvim
-
-once installed, you can install Luarocks with it.
-
-### Plugin installation without Luarocks 
-If you are installing without Luarocks, make sure nvim-client and its dependencies are available within the xplr environment. Checkhealth can't be used to validate the installation in this case.
-
-```lua
-package.path = package.path .. "/path/to/deps"
-```
-If using Luarocks, luarocks require paths are appended to xplr require paths at `setup()`
 
 ___
 ### Default Behaviour

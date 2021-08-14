@@ -11,26 +11,24 @@ local function setup(opts)
   if os.getenv("NVIM_XPLR") then
     local enabled = false
     local messages = {}
+    local home = os.getenv("HOME")
+    local root = ("%s%s"):format(home, "/.config/xplr/plugins/nvim-xplr")
 
     -- workaround for xplr sub modules - can't require
-    package.path = package.path .. ";" .. os.getenv("HOME") .. "/.config/xplr/plugins/?.lua"
+    package.path = package.path .. ";" .. home .. "/.config/xplr/plugins/?.lua"
 
+    --local deps = {}
+    local deps_luaclient = ("%s%s"):format(root, "/src/lua-client/?.lua")
+    local deps_coxpcall = ("%s%s"):format(root, "/src/coxpcall/src/?.lua")
+    local cdeps_mpack = ("%s%s"):format(root, "/src/libmpack/?.so")
+    local cdeps_luv = ("%s%s"):format(root, "/src/luv/?.so")
+    package.path = package.path .. ";" .. deps_luaclient .. ";" .. deps_coxpcall
+    package.cpath = package.cpath .. ";" .. cdeps_mpack .. ";" .. cdeps_luv
     local vim = require("nvim-xplr.vim")
-    -- add luarocks to path
-    local handle = io.popen("luarocks path --lr-path")
-    local luarocks_path = handle:read("*a")
-    package.path = package.path .. ";" .. luarocks_path
 
-    -- -- add luarocks to cpath (--lr-cpath not exporting correct paths)
-    local handle = io.popen("luarocks path")
-    local output = handle:read("*a")
-    local luarocks_cpath = vim.split(output, "\n")
-    local luarocks_cpath = luarocks_cpath[2]:gsub([[export LUA_CPATH=%']], "")
-    local luarocks_cpath = luarocks_cpath:sub(1, #luarocks_cpath - 1)
-    package.cpath = package.cpath .. ";" .. luarocks_cpath
-
+  
     local client
-       if pcall(require, "nvim.session") then
+    if pcall(require, "nvim.session") then
       local Client = require("nvim-xplr.client")
       local socket_path = os.getenv("NVIM_XPLR_SERVERNAME")
       client = Client:new(socket_path)
@@ -64,7 +62,7 @@ local function setup(opts)
           )
           messages = { "StopFifo" }
         else
-                  enabled = true
+          enabled = true
           client:exec_lua(
             [[return require'xplr.manager'._toggle_preview(...)]],
             { fifo_path = opts.preview.fifo_path, enabled = enabled }
